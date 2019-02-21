@@ -4,7 +4,7 @@ import { storiesOf } from '@storybook/react';
 import { Leaf1, Leaf2, Leaf3, Leaf4, Leaf5, Leaf6, Leaf7, Leaf8, Leaf9, Leaf10, Leaf11, Leaf12, Leaf13, Leaf14, Leaf15, Leaf16 } from '../svg/leaves'
 
 import Particle from '../components/Particle/Particle';
-
+import ParticleEngine from '../components/ParticleEngine/ParticleEngine'
 
 const divStyle = {
   fill: 'red',
@@ -35,5 +35,10 @@ storiesOf('Particle', module)
   .add('Random Leaf Particle', () => <Particle particleType="LEAF" />)
   .add('A Bunch of Random Leaves', () => {
     return Array(15).fill(0).map((v,i)=><Particle particleType="LEAF" key={i} position={{x: i*40}}/>);
+  })
+
+storiesOf('ParticleEngine', module)
+  .add('ParticleEngine', () => {
+  return<ParticleEngine particleType="LEAF" volume={100} width={500} intensity={50} />
   })
 
