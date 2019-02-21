@@ -1,4 +1,4 @@
-import React, {memo} from 'react';
+import React, {useState} from 'react';
 import { Leaf1, Leaf2, Leaf3, Leaf4, Leaf5, Leaf6, Leaf7, Leaf8, Leaf9, Leaf10, Leaf11, Leaf12, Leaf13, Leaf14, Leaf15, Leaf16 } from '../../svg/leaves'
 
 const particleTypeSettings = {
@@ -62,20 +62,18 @@ const getRandomHeight = (particleType) => {
 }
 
 const Particle = ({particleType, position={}}) => {
+    const[ color ] = useState(getRandomColor(particleType))
+    const[ height ] = useState(getRandomHeight(particleType))
+    const[ image ] = useState(() => getRandomImage(particleType))
 
     const style = {
-        fill: getRandomColor(particleType),
-        position: 'absolute',
-        height: `${getRandomHeight(particleType)}px`,
-        top: position.y || 0,
-        left: position.x || 0,
+        fill: color,
+        height: `${height}px`,
         index: position.z || 1,
-        transform: `rotate(${getRandomAngle(particleType)}deg)`
-
     }
-    const Image = getRandomImage(particleType);
+    const Image = image;
     return <Image style={style} />
 }
 
  
-export default memo(Particle);
+export default Particle;

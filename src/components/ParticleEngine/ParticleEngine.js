@@ -8,45 +8,67 @@ const generateRandomNumberInRange = (num) => Math.floor(Math.random() * num)
 
 const Box = posed.div({
     hidden: { 
-        y: 0,
+        top: -50,
         rotate: 0,
         rotateY: 0,
-        x: ({x=0}) => x,
+        left: ({x=0}) => x,
+        x: 0,//({x=0}) => x,
         transition: { duration: 0 },
     },
     visible: {
         rotate: ({rotate}) => rotate,
         rotateY: ({rotateY}) => rotateY,
-        y: 800,
-        x: ({x=0}) => x,
+        top: 800,
+        originX: ({intensity}) => (20-generateRandomNumberInRange(intensity)),
+        originY: ({intensity}) => (20-generateRandomNumberInRange(intensity)),
+        left: ({x=0}) => x,
         transition: ({ intensity }) => ({ 
-            duration: intensity * 100 
+            duration: intensity * 600 
         }),
      }
   });
   
   class ParticleEngine extends React.Component {
-    state = { isVisible: false, particleArray: [] };
-  
+    state = { particleArray: [], isVisible: true };
+
     componentDidMount() {
-      const {volume, width} = this.props;
-      const particleArray = Array(volume).fill(0)
-      particleArray.forEach((v, i) => particleArray[i] = generateRandomNumberInRange(width))
-      this.setState({particleArray: particleArray})
+      const {volume, width, intensity} = this.props;
+      const numParticlesPerLoop = Math.floor(volume/10);
+      const me = this;
+
       setInterval(() => {
-        this.setState({ isVisible: !this.state.isVisible });
-      }, 6000);
+        let particleArray= me.state.particleArray || []
+        const lastElement = particleArray[particleArray.length - 1]
+        if (lastElement && lastElement.isVisible===true) {
+            lastElement.isVisible = false
+        }
+        const newParticle = {
+            x: generateRandomNumberInRange(width),
+            isVisible: true,
+            key: `particle-${Math.random(9999999)}`
+        }
+            if(particleArray.length >= volume) {
+                particleArray.splice(0,1)
+            } 
+                particleArray.push(newParticle)
+            
+                
+
+        me.setState({particleArray: particleArray})
+      }, Math.floor((intensity * 100)/numParticlesPerLoop));
+      
     }
     render() {
         const { intensity=10,particleType } = this.props;
-        const { isVisible, particleArray } = this.state;
-        return particleArray.map((v,i) => 
-        <Box className="box" pose={isVisible ? 'visible' : 'hidden'} intensity={intensity} x={v} rotate={generateRandomNumberInRange(900)} rotateY={generateRandomNumberInRange(360)}>
-        <Particle
+        const { particleArray } = this.state;
+        return particleArray.map((v,i) =>
+         v ? 
+        (<Box key={`box${v.key}`} style={{position:"absolute"}} pose={v.isVisible ? 'hidden' : 'visible'} intensity={intensity} x={v.x} rotate={generateRandomNumberInRange(500-2*intensity)-generateRandomNumberInRange(500-2*intensity)} rotateY={generateRandomNumberInRange(500-2*intensity)-generateRandomNumberInRange(500-2*intensity)}>
+       <Particle
           particleType={particleType}
-          key={i}
+          key={v.key}
         />
-        </Box>)
+        </Box>) : null )
     }
   }
 

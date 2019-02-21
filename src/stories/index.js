@@ -37,8 +37,7 @@ storiesOf('Particle', module)
     return Array(15).fill(0).map((v,i)=><Particle particleType="LEAF" key={i} position={{x: i*40}}/>);
   })
 
-storiesOf('ParticleEngine', module)
-  .add('ParticleEngine', () => {
-  return<ParticleEngine particleType="LEAF" volume={100} width={500} intensity={50} />
-  })
-
+storiesOf('ParticleEngine/Leaves', module)
+  .add('ParticleEngine 100 count, mild intensity', () => <ParticleEngine particleType="LEAF" volume={150} width={500} intensity={20} />)
+  .add('ParticleEngine 100 count, medium intensity', () => <ParticleEngine particleType="LEAF" volume={100} width={500} intensity={10} />)
+  .add('ParticleEngine 100 count, strong intensity', () => <ParticleEngine particleType="LEAF" volume={100} width={500} intensity={5} />)
