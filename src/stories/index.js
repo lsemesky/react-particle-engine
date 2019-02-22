@@ -1,10 +1,20 @@
 import React from 'react';
 
 import { storiesOf } from '@storybook/react';
+import { MuiThemeProvider } from '@material-ui/core/styles';
 import { Leaf1, Leaf2, Leaf3, Leaf4, Leaf5, Leaf6, Leaf7, Leaf8, Leaf9, Leaf10, Leaf11, Leaf12, Leaf13, Leaf14, Leaf15, Leaf16 } from '../svg/leaves'
 
 import Particle from '../components/Particle/Particle';
 import ParticleEngine from '../components/ParticleEngine/ParticleEngine'
+import ParticleViewer from '../components/ParticleViewer/ParticleViewer'
+
+import theme from '../theme'
+
+const muiThemeDecorator = (story) => (
+    <MuiThemeProvider theme={theme}>
+      {story()}
+    </MuiThemeProvider>
+  );
 
 const divStyle = {
   fill: 'red',
@@ -31,13 +41,16 @@ storiesOf('SVG/Leaves', module)
   .add('Leaf16', () => <Leaf16 />)
 
 storiesOf('Particle', module)
-  .add('Particle', () => <Particle />)
-  .add('Random Leaf Particle', () => <Particle particleType="LEAF" />)
-  .add('A Bunch of Random Leaves', () => {
-    return Array(15).fill(0).map((v,i)=><Particle particleType="LEAF" key={i} position={{x: i*40}}/>);
-  })
+  .add('Default Particle', () => <Particle />)
+
+storiesOf('Particle/Leaf', module)
+  .add('Default Leaf Particle', () => <Particle particleType="LEAF" />)
 
 storiesOf('ParticleEngine/Leaves', module)
-  .add('ParticleEngine 100 count, mild intensity', () => <ParticleEngine particleType="LEAF" volume={150} width={500} intensity={20} />)
+  .add('ParticleEngine 100 count, mild intensity', () => <ParticleEngine particleType="LEAF" volume={20} width={500} intensity={20} />)
   .add('ParticleEngine 100 count, medium intensity', () => <ParticleEngine particleType="LEAF" volume={100} width={500} intensity={10} />)
-  .add('ParticleEngine 100 count, strong intensity', () => <ParticleEngine particleType="LEAF" volume={100} width={500} intensity={5} />)
+  .add('ParticleEngine 100 count, strong intensity', () => <ParticleEngine particleType="LEAF" volume={200} width={500} intensity={5} />)
+
+storiesOf('ParticleViewer', module)
+  .addDecorator(muiThemeDecorator)
+  .add('ParticleViewer', () => <ParticleViewer />)

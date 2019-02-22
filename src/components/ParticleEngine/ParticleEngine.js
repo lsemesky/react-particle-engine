@@ -1,10 +1,45 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Particle from '../Particle/Particle'
 import posed from 'react-pose';
-import { Leaf1 } from '../../svg/leaves'
+import particleTypeSettings from '../../ParticleTypeSettings';
+
+const getRandomElementFromList = (list) => {
+  const randomIndex = Math.floor(Math.random() * list.length);
+  return list ? list[randomIndex] : null
+}
+
+const getParticleTypeSetting = (particleType, settingName) => {
+  const particleTypeSetting = particleTypeSettings[particleType] || particleTypeSettings.DEFAULT
+  return particleTypeSetting[settingName]
+}
+
+const getRandomColor = (particleType) => {
+  const colorList = getParticleTypeSetting(particleType, 'colorList')
+  return getRandomElementFromList(colorList)
+}
+
+const getRandomImage = (particleType) => {
+  const imageList = getParticleTypeSetting(particleType, 'imageList')
+  return getRandomElementFromList(imageList)
+}
+
+const getRandomRotation = (particleType, intensity) => {
+  const {calculateMin, calculateMax} = getParticleTypeSetting(particleType, 'rotation')
+  return generateRandomNumberInRange(calculateMax(intensity), calculateMin(intensity))
+}
+
+const getRandomYRotation = (particleType, intensity) => {
+  const {calculateMin, calculateMax} = getParticleTypeSetting(particleType, 'yRotation')
+  return generateRandomNumberInRange(calculateMax(intensity), calculateMin(intensity)) 
+}
+
+const getRandomHeight = (particleType) => {
+  const {minHeight, maxHeight} = getParticleTypeSetting(particleType, 'sizeRange')
+  return generateRandomNumberInRange(maxHeight, minHeight);
+}
 
 
-const generateRandomNumberInRange = (num) => Math.floor(Math.random() * num)
+const generateRandomNumberInRange = (max, min=0) => Math.floor(Math.random() * (max - min)) + min;
 
 const Box = posed.div({
     hidden: { 
@@ -27,86 +62,63 @@ const Box = posed.div({
         }),
      }
   });
-  
+
   class ParticleEngine extends React.Component {
     state = { particleArray: [], isVisible: true };
 
     componentDidMount() {
-      const {volume, width, intensity} = this.props;
-      const numParticlesPerLoop = Math.floor(volume/10);
+
       const me = this;
 
-      setInterval(() => {
-        let particleArray= me.state.particleArray || []
-        const lastElement = particleArray[particleArray.length - 1]
-        if (lastElement && lastElement.isVisible===true) {
-            lastElement.isVisible = false
-        }
-        const newParticle = {
-            x: generateRandomNumberInRange(width),
-            isVisible: true,
-            key: `particle-${Math.random(9999999)}`
-        }
-            if(particleArray.length >= volume) {
-                particleArray.splice(0,1)
-            } 
-                particleArray.push(newParticle)
-            
-                
+      var myFunction = function() {
+        const {volume, width, intensity, particleType} = me.props;
 
-        me.setState({particleArray: particleArray})
-      }, Math.floor((intensity * 100)/numParticlesPerLoop));
-      
+          let particleArray= me.state.particleArray || []
+          const lastElement = particleArray[particleArray.length - 1]
+          if (lastElement && lastElement.isVisible===true) {
+              lastElement.isVisible = false
+          }
+          const newParticle = {
+              x: generateRandomNumberInRange(width),
+              isVisible: true,
+              key: `particle-${Math.random()}`,
+              color: getRandomColor(particleType),
+              height: getRandomHeight(particleType),
+              image: getRandomImage(particleType),
+          }
+          if(particleArray.length >= volume * .5)
+              particleArray.splice(0,Math.floor((particleArray.length - volume)/2))
+          particleArray.push(newParticle)
+              
+          me.setState({particleArray: particleArray})
+          const timer = Math.floor((intensity * 200)/volume);
+          setTimeout(myFunction, timer);
+      }
+      setTimeout(myFunction, Math.floor((this.props.intensity * 1000)/this.props.volume));
     }
     render() {
-        const { intensity=10,particleType } = this.props;
+        const { intensity=10,particleType, paused } = this.props;
         const { particleArray } = this.state;
         return particleArray.map((v,i) =>
          v ? 
-        (<Box key={`box${v.key}`} style={{position:"absolute"}} pose={v.isVisible ? 'hidden' : 'visible'} intensity={intensity} x={v.x} rotate={generateRandomNumberInRange(500-2*intensity)-generateRandomNumberInRange(500-2*intensity)} rotateY={generateRandomNumberInRange(500-2*intensity)-generateRandomNumberInRange(500-2*intensity)}>
-       <Particle
-          particleType={particleType}
-          key={v.key}
-        />
+        (
+        <Box 
+          key={`box${v.key}`}
+          style={{position:"absolute"}}
+          pose={v.isVisible ? 'hidden' : 'visible'}
+          intensity={intensity}
+          x={v.x}
+          rotate={getRandomRotation(particleType, intensity)}
+          rotateY={getRandomYRotation(particleType, intensity)}
+        >
+          <Particle
+            particleType={particleType}
+            color={v.color}
+            height={v.height}
+            image={v.image}
+          />
         </Box>) : null )
     }
   }
-
-// const ParticleEngine = ({ particleType, volume, intensity, width, height }) => {
-//     const [isVisible, setIsVisible] = useState(true);
-//     if (!particleArray.length)
-//         particleArray = Array(volume).fill(0)
-//         //const [counter, setCounter] = useState(0);
-
-//         useEffect(() => {
-//           const interval = setInterval(() => {
-//             setIsVisible(counter => !counter);
-//           }, 1000);
-      
-//           return () => {
-//             clearInterval(interval);
-//           };
-//         }, []);
-      
-//     particleArray.forEach((v, i) => particleArray[i] = { x: generateRandomStartingPosition(width), y: 0 })
-
-//     return particleArray.map((v, i) => {
-//         const Box = posed.div({
-//             hidden: { opacity: 0 },
-//             visible: { opacity: 1 }
-//         });
-//         return <Box key={i} style={{ color: 'black', background: 'red', height: '100px', width: '100px' }} pose={isVisible ? 'visible' : 'hidden'}>
-//             {/* <Particle
-//                 particleType={particleType}
-//                 key={i}
-//                 position={v}
-//                 intensity={intensity}
-//             /> */}
-//             {/* <Leaf1 /> */}
-//             {`${isVisible}`}
-//         </Box>
-//     }
-//     )
-// }
 
 export default ParticleEngine;
