@@ -7,6 +7,8 @@ import { Leaf1, Leaf2, Leaf3, Leaf4, Leaf5, Leaf6, Leaf7, Leaf8, Leaf9, Leaf10, 
 import Particle from '../components/Particle/Particle';
 import ParticleEngine from '../components/ParticleEngine/ParticleEngine'
 import ParticleViewer from '../components/ParticleViewer/ParticleViewer'
+import { withKnobs, object, select, radios, color, number } from '@storybook/addon-knobs/react';
+
 
 import theme from '../theme'
 
@@ -41,10 +43,55 @@ storiesOf('SVG/Leaves', module)
   .add('Leaf16', () => <Leaf16 />)
 
 storiesOf('Particle', module)
-  .add('Default Particle', () => <Particle />)
+  .addDecorator(withKnobs)
+  .add('Default Particle', () => <Particle 
+    color={color('Color','#000000')} 
+    height={number('Height', 100)}
+  />)
 
 storiesOf('Particle/Leaf', module)
-  .add('Default Leaf Particle', () => <Particle particleType="LEAF" />)
+  .addDecorator(withKnobs)
+  .add('Default Leaf Particle', () => <Particle 
+  color={color('Color','#000000')} 
+  height={number('Height', 100)}
+  image={Leaf1}
+/>)
+
+storiesOf('ParticleEngine', module)
+  .addDecorator(withKnobs)
+  .add('Particle Engine', () => <ParticleEngine 
+    particleType={select('Particle Type',{Leaf:'LEAF'},'LEAF')}
+    volume={number(
+      'Volume', 
+      100, 
+      {
+        range: true,
+        min: 0,
+        max: 200,
+        step: 10,
+      }
+    )}
+    width={number(
+      'Width',
+      500,
+      {
+        range: true,
+        min: 100,
+        max: 1000,
+        step: 50,
+      }
+    )}
+    intensity={number(
+      'Intensity (Lower = more intense)',
+      10,
+      {
+        range: true,
+        min: 0,
+        max: 20,
+        step: 5,
+      }
+    )}
+  />)
 
 storiesOf('ParticleEngine/Leaves', module)
   .add('ParticleEngine 100 count, mild intensity', () => <ParticleEngine particleType="LEAF" volume={20} width={500} intensity={20} />)

@@ -43,6 +43,7 @@ const generateRandomNumberInRange = (max, min=0) => Math.floor(Math.random() * (
 
 const Box = posed.div({
     hidden: { 
+      background: 'none',
         top: -50,
         rotate: 0,
         rotateY: 0,
@@ -50,16 +51,34 @@ const Box = posed.div({
         x: 0,//({x=0}) => x,
         transition: { duration: 0 },
     },
+    // paused: {
+    //   background: 'red', 
+    //   transition: {
+    //     x: ({ from, velocity, to }) => from,
+    //     y: ({ velocity, to }) => velocity > 0 ? { to: 600 } : { to },
+    //     duration: 0,
+    //     velocity: 0,
+
+    //   }
+    // },
     visible: {
         rotate: ({rotate}) => rotate,
         rotateY: ({rotateY}) => rotateY,
+        background: 'red',
         top: 800,
         originX: ({intensity}) => (20-generateRandomNumberInRange(intensity)),
         originY: ({intensity}) => (20-generateRandomNumberInRange(intensity)),
         left: ({x=0}) => x,
-        transition: ({ intensity }) => ({ 
-            duration: intensity * 600 
-        }),
+        // transition: { 
+        //   type: 'tween',
+        //     duration: 600,//({ intensity, paused }) => intensity * 600,
+        //     // x: ({ from, to, paused }) => paused ? from : to,
+        //  //  top: ({ from, to, paused }) => paused ? from : to,
+        //     top: ({ from, to, paused }) => paused ?  {from} : {to},
+        // },
+        transition: ({intensity}) => ({
+          duration: intensity * 600
+        })
      }
   });
 
@@ -107,6 +126,7 @@ const Box = posed.div({
           style={{position:"absolute"}}
           pose={v.isVisible ? 'hidden' : 'visible'}
           intensity={intensity}
+          paused={paused}
           x={v.x}
           rotate={getRandomRotation(particleType, intensity)}
           rotateY={getRandomYRotation(particleType, intensity)}
