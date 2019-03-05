@@ -7,7 +7,7 @@ import { Leaf1, Leaf2, Leaf3, Leaf4, Leaf5, Leaf6, Leaf7, Leaf8, Leaf9, Leaf10, 
 import Particle from '../components/Particle/Particle';
 import ParticleEngine from '../components/ParticleEngine/ParticleEngine'
 import ParticleViewer from '../components/ParticleViewer/ParticleViewer'
-import { withKnobs, object, select, radios, color, number } from '@storybook/addon-knobs/react';
+import { withKnobs, object, select, radios, color, number, boolean } from '@storybook/addon-knobs/react';
 
 
 import theme from '../theme'
@@ -91,6 +91,7 @@ storiesOf('ParticleEngine', module)
         step: 5,
       }
     )}
+    paused={boolean('Paused', false)}
   />)
 
 storiesOf('ParticleEngine/Leaves', module)

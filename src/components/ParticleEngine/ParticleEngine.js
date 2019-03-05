@@ -2,6 +2,8 @@ import React from 'react';
 import Particle from '../Particle/Particle'
 import posed from 'react-pose';
 import particleTypeSettings from '../../ParticleTypeSettings';
+import { easing, tween, styler } from 'popmotion';
+
 
 const getRandomElementFromList = (list) => {
   const randomIndex = Math.floor(Math.random() * list.length);
@@ -41,47 +43,6 @@ const getRandomHeight = (particleType) => {
 
 const generateRandomNumberInRange = (max, min=0) => Math.floor(Math.random() * (max - min)) + min;
 
-const Box = posed.div({
-    hidden: { 
-      background: 'none',
-        top: -50,
-        rotate: 0,
-        rotateY: 0,
-        left: ({x=0}) => x,
-        x: 0,//({x=0}) => x,
-        transition: { duration: 0 },
-    },
-    // paused: {
-    //   background: 'red', 
-    //   transition: {
-    //     x: ({ from, velocity, to }) => from,
-    //     y: ({ velocity, to }) => velocity > 0 ? { to: 600 } : { to },
-    //     duration: 0,
-    //     velocity: 0,
-
-    //   }
-    // },
-    visible: {
-        rotate: ({rotate}) => rotate,
-        rotateY: ({rotateY}) => rotateY,
-        background: 'red',
-        top: 800,
-        originX: ({intensity}) => (20-generateRandomNumberInRange(intensity)),
-        originY: ({intensity}) => (20-generateRandomNumberInRange(intensity)),
-        left: ({x=0}) => x,
-        // transition: { 
-        //   type: 'tween',
-        //     duration: 600,//({ intensity, paused }) => intensity * 600,
-        //     // x: ({ from, to, paused }) => paused ? from : to,
-        //  //  top: ({ from, to, paused }) => paused ? from : to,
-        //     top: ({ from, to, paused }) => paused ?  {from} : {to},
-        // },
-        transition: ({intensity}) => ({
-          duration: intensity * 600
-        })
-     }
-  });
-
   class ParticleEngine extends React.Component {
     state = { particleArray: [], isVisible: true };
 
@@ -90,54 +51,102 @@ const Box = posed.div({
       const me = this;
 
       var myFunction = function() {
-        const {volume, width, intensity, particleType} = me.props;
+        const {volume, width, intensity, particleType, paused} = me.props;
 
           let particleArray= me.state.particleArray || []
-          const lastElement = particleArray[particleArray.length - 1]
-          if (lastElement && lastElement.isVisible===true) {
-              lastElement.isVisible = false
-          }
+          const startX = generateRandomNumberInRange(width)  
+
+
+          if (!paused) {
           const newParticle = {
-              x: generateRandomNumberInRange(width),
-              isVisible: true,
-              key: `particle-${Math.random()}`,
+              x: startX,
+              key: `particle-${Math.random()}-${Math.random()}`,
               color: getRandomColor(particleType),
               height: getRandomHeight(particleType),
               image: getRandomImage(particleType),
+              ref: React.createRef(),
+              tween: null
           }
-          if(particleArray.length >= volume * .5)
-              particleArray.splice(0,Math.floor((particleArray.length - volume)/2))
+          if(particleArray.length >= volume * .5){
+              const numToSplice = 2;//Math.floor((particleArray.length - volume)/2);
+              particleArray.splice(0, numToSplice);
+          }
           particleArray.push(newParticle)
-              
+        }
+        particleArray.forEach((particle, index) => {
+          if (particle.ref.current && !particle.tween) {
+            particleArray[index].tween = 
+            tween({
+              from: {
+                x: startX,
+                y: -50,
+                rotate: 0,
+                rotateY: 0,
+                originX: 20-generateRandomNumberInRange(intensity),
+                originY: 20-generateRandomNumberInRange(intensity),
+                opacity: 1,
+              },
+              to: {
+                x: startX,
+                y: 600,
+                rotate: getRandomRotation(particleType, intensity),
+                rotateY: getRandomRotation(particleType, intensity),
+                originX: 20-generateRandomNumberInRange(intensity),
+                originY: 20-generateRandomNumberInRange(intensity),
+                opacity: 1,
+              },
+              duration: intensity * 600,
+            }
+
+            )
+            .start(styler(particle.ref.current).set)
+          }
+        }, particleArray) 
+
           me.setState({particleArray: particleArray})
-          const timer = Math.floor((intensity * 200)/volume);
+          const timer = Math.floor(((intensity +1)/volume)*200);
           setTimeout(myFunction, timer);
       }
-      setTimeout(myFunction, Math.floor((this.props.intensity * 1000)/this.props.volume));
+      setTimeout(myFunction, Math.floor(((me.props.intensity +1)/me.props.volume)*200));
     }
+
+    componentDidUpdate(prevProps) {
+      const {particleArray = []} = this.state;
+      const {paused} = this.props;
+        particleArray.forEach((particle) => {
+          if(particle.tween) {
+          if (paused)
+            particle.tween.pause();
+          else
+            particle.tween.resume();
+          }
+        })
+      
+
+    }
+
     render() {
         const { intensity=10,particleType, paused } = this.props;
         const { particleArray } = this.state;
         return particleArray.map((v,i) =>
          v ? 
         (
-        <Box 
-          key={`box${v.key}`}
-          style={{position:"absolute"}}
-          pose={v.isVisible ? 'hidden' : 'visible'}
-          intensity={intensity}
-          paused={paused}
-          x={v.x}
-          rotate={getRandomRotation(particleType, intensity)}
-          rotateY={getRandomYRotation(particleType, intensity)}
-        >
+          <div 
+          key={v.key}
+          style={{position: 'absolute', y: -50, x: v.x, opacity: 0}} 
+          ref={v.ref}>
+
           <Particle
+            
             particleType={particleType}
             color={v.color}
             height={v.height}
             image={v.image}
           />
-        </Box>) : null )
+          </div>
+        ) 
+        : null )
+
     }
   }
 
