@@ -51,7 +51,7 @@ const generateRandomNumberInRange = (max, min=0) => Math.floor(Math.random() * (
       const me = this;
 
       var myFunction = function() {
-        const {volume, width, intensity, particleType, paused} = me.props;
+        const {volume, width, intensity, particleType, paused, height=500, heightOffset=100 } = me.props;
 
           let particleArray= me.state.particleArray || []
           const startX = generateRandomNumberInRange(width)  
@@ -67,10 +67,6 @@ const generateRandomNumberInRange = (max, min=0) => Math.floor(Math.random() * (
               ref: React.createRef(),
               tween: null
           }
-          if(particleArray.length >= volume * .5){
-              const numToSplice = 2;//Math.floor((particleArray.length - volume)/2);
-              particleArray.splice(0, numToSplice);
-          }
           particleArray.push(newParticle)
         }
         particleArray.forEach((particle, index) => {
@@ -79,7 +75,7 @@ const generateRandomNumberInRange = (max, min=0) => Math.floor(Math.random() * (
             tween({
               from: {
                 x: startX,
-                y: -50,
+                y: -heightOffset,
                 rotate: 0,
                 rotateY: 0,
                 originX: 20-generateRandomNumberInRange(intensity),
@@ -88,18 +84,22 @@ const generateRandomNumberInRange = (max, min=0) => Math.floor(Math.random() * (
               },
               to: {
                 x: startX,
-                y: 600,
+                y: height + heightOffset,
                 rotate: getRandomRotation(particleType, intensity),
                 rotateY: getRandomRotation(particleType, intensity),
                 originX: 20-generateRandomNumberInRange(intensity),
                 originY: 20-generateRandomNumberInRange(intensity),
                 opacity: 1,
               },
-              duration: intensity * 600,
+              duration: height * intensity * 3,
             }
 
             )
-            .start(styler(particle.ref.current).set)
+            .while(v => v.y < height)
+            .start({
+              update: styler(particle.ref.current).set,
+              complete: ()=>particleArray.splice(particleArray.indexOf(particle),1),
+            })
           }
         }, particleArray) 
 
@@ -126,7 +126,7 @@ const generateRandomNumberInRange = (max, min=0) => Math.floor(Math.random() * (
     }
 
     render() {
-        const { intensity=10,particleType, paused } = this.props;
+        const { particleType } = this.props;
         const { particleArray } = this.state;
         return particleArray.map((v,i) =>
          v ? 

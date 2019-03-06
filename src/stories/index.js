@@ -7,7 +7,7 @@ import { Leaf1, Leaf2, Leaf3, Leaf4, Leaf5, Leaf6, Leaf7, Leaf8, Leaf9, Leaf10, 
 import Particle from '../components/Particle/Particle';
 import ParticleEngine from '../components/ParticleEngine/ParticleEngine'
 import ParticleViewer from '../components/ParticleViewer/ParticleViewer'
-import { withKnobs, object, select, radios, color, number, boolean } from '@storybook/addon-knobs/react';
+import { withKnobs, object, select, radios, color, number, boolean } from '@storybook/addon-knobs';
 
 
 import theme from '../theme'
@@ -68,7 +68,7 @@ storiesOf('ParticleEngine', module)
         range: true,
         min: 0,
         max: 200,
-        step: 10,
+        step: 1,
       }
     )}
     width={number(
@@ -78,7 +78,17 @@ storiesOf('ParticleEngine', module)
         range: true,
         min: 100,
         max: 1000,
-        step: 50,
+        step: 5,
+      }
+    )}
+    height={number(
+      'Height',
+      500,
+      {
+        range: true,
+        min: 100,
+        max: 800,
+        step: 10,
       }
     )}
     intensity={number(
@@ -88,7 +98,7 @@ storiesOf('ParticleEngine', module)
         range: true,
         min: 0,
         max: 20,
-        step: 5,
+        step: 1,
       }
     )}
     paused={boolean('Paused', false)}
