@@ -40,12 +40,11 @@ const getRandomHeight = (particleType) => {
   return generateRandomNumberInRange(maxHeight, minHeight);
 }
 
-
 const generateRandomNumberInRange = (max, min=0) => Math.floor(Math.random() * (max - min)) + min;
 
   class ParticleEngine extends React.Component {
     state = { particleArray: [], isVisible: true };
-
+    
     componentDidMount() {
 
       const me = this;
@@ -92,6 +91,8 @@ const generateRandomNumberInRange = (max, min=0) => Math.floor(Math.random() * (
                 opacity: 1,
               },
               duration: height * intensity * 3,
+              flip: getParticleTypeSetting(particleType, 'flip')
+
             }
 
             )
@@ -105,9 +106,14 @@ const generateRandomNumberInRange = (max, min=0) => Math.floor(Math.random() * (
 
           me.setState({particleArray: particleArray})
           const timer = Math.floor(((intensity +1)/volume)*200);
-          setTimeout(myFunction, timer);
+          me.timer = setTimeout(myFunction, timer);
       }
-      setTimeout(myFunction, Math.floor(((me.props.intensity +1)/me.props.volume)*200));
+      this.timer = setTimeout(myFunction, Math.floor(((me.props.intensity +1)/me.props.volume)*200));
+    }
+
+    componentWillUnmount() {
+      if(this.timer)
+        clearTimeout(this.timer)
     }
 
     componentDidUpdate(prevProps) {
@@ -121,8 +127,6 @@ const generateRandomNumberInRange = (max, min=0) => Math.floor(Math.random() * (
             particle.tween.resume();
           }
         })
-      
-
     }
 
     render() {

@@ -60,7 +60,7 @@ storiesOf('Particle/Leaf', module)
 storiesOf('ParticleEngine', module)
   .addDecorator(withKnobs)
   .add('Particle Engine', () => <ParticleEngine 
-    particleType={select('Particle Type',{Leaf:'LEAF'},'LEAF')}
+    particleType={select('Particle Type',{Leaf:'LEAF', Insect: 'INSECT'},'LEAF')}
     volume={number(
       'Volume', 
       100, 
