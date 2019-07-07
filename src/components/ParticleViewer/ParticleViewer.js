@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import FormGroup from '@material-ui/core/FormGroup'
@@ -22,14 +22,14 @@ const styles = {
   },
 }
 
-const ParticleViewer = ({classes}) => {
-  const[ intensity, setIntensity ] = useState(DEFAULT_INTENSITY)
-  const[ volume, setVolume ] = useState(DEFAULT_VOLUME)
-  const[ paused, setPaused ] = useState(DEFAULT_PAUSED_STATUS)
+const ParticleViewer = ({ classes }) => {
+  const [intensity, setIntensity] = useState(DEFAULT_INTENSITY)
+  const [volume, setVolume] = useState(DEFAULT_VOLUME)
+  const [paused, setPaused] = useState(DEFAULT_PAUSED_STATUS)
 
-  const[ particleType ] = useState(DEFAULT_PARTICLE_TYPE)
-  const intensityId='intensity-slider'
-  const volumeId='volume-slider'
+  const [particleType] = useState(DEFAULT_PARTICLE_TYPE)
+  const intensityId = 'intensity-slider'
+  const volumeId = 'volume-slider'
   //const particleTypeId='particle-type-slider'
   return <div className={classes.root}>
     <Typography id={intensityId}>Intensity: {intensity}</Typography>
@@ -66,19 +66,21 @@ const ParticleViewer = ({classes}) => {
         label={paused ? 'Unpause' : 'Pause'}
       />
     </FormGroup>
-    <ParticleEngine
-      intensity={25-intensity}
-      volume={volume}
-      paused={paused}
-      particleType={particleType}
-      width={200}
-    />
+    <div style={{ postion: 'absolute', top: 0, bottom: 0, clipPath: 'circle(100px at center)' }}>
+      <ParticleEngine
+        intensity={25 - intensity}
+        volume={volume}
+        paused={paused}
+        particleType={particleType}
+        width={400}
+      />
+    </div>
   </div>
 
 }
 
 ParticleViewer.propTypes = {
   classes: PropTypes.object.isRequired
-} 
+}
 
 export default withStyles(styles)(ParticleViewer)

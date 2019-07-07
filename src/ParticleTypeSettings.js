@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 
 import { Leaf1, Leaf10, Leaf11, Leaf12, Leaf13, Leaf14, Leaf15, Leaf16, Leaf2, Leaf3, Leaf4, Leaf5, Leaf6, Leaf7, Leaf8, Leaf9 } from './svg/leaves'
-import { Insect1, //Insect2, Insect3, Insect4, Insect5, Insect6, Insect7, Insect8, Insect9, Insect10, Insect11, Insect12, Insect13, Insect14, Insect15, Insect16 
+import {
+  Insect1, //Insect2, Insect3, Insect4, Insect5, Insect6, Insect7, Insect8, Insect9, Insect10, Insect11, Insect12, Insect13, Insect14, Insect15, Insect16 
 } from './svg/insects'
 import { generateRandomNumberInRange } from './utils/randomUtils'
 
@@ -15,13 +16,19 @@ const ParticleTypeSettings = {
       maxHeight: 35,
     },
     rotation: {
-      calculateMin: (intensity)=>500-intensity*4,
-      calculateMax: (intensity)=>-500+intensity*4,
+      calculateMin: (intensity) => 500 - intensity * 4,
+      calculateMax: (intensity) => -500 + intensity * 4,
     },
     yRotation: {
-      calculateMin: (intensity)=>500-intensity*4,
-      calculateMax: (intensity)=>-500+intensity*4,
+      calculateMin: (intensity) => 500 - intensity * 4,
+      calculateMax: (intensity) => -500 + intensity * 4,
     },
+    durationMultiplier: {
+      calculateMin: (intensity) => 2 * intensity,
+      calculateMax: (intensity) => 4 * intensity,
+    },
+    originX: (intensity, width) => generateRandomNumberInRange(intensity) / intensity,
+    originY: (intensity, height) => generateRandomNumberInRange(intensity) / intensity,
     xStartPositionFunction: (viewerWidth, viewerXOffset) => generateRandomNumberInRange(viewerXOffset, viewerWidth),
     xEndPositionFunction: (startXPosition, viewerWidth, viewerXOffset) => startXPosition,
     yStartPositionFunction: (viewerHeight, viewerYOffset) => viewerYOffset,
@@ -37,13 +44,19 @@ const ParticleTypeSettings = {
       maxHeight: 15,
     },
     rotation: {
-      calculateMin: ()=>0,
-      calculateMax: ()=>0,
+      calculateMin: () => 0,
+      calculateMax: () => 0,
     },
     yRotation: {
-      calculateMin: ()=>0,
-      calculateMax: ()=>0,
+      calculateMin: () => 0,
+      calculateMax: () => 0,
     },
+    durationMultiplier: {
+      calculateMin: (intensity) => intensity,
+      calculateMax: (intensity) => intensity,
+    },
+    originX: (intensity, width) => generateRandomNumberInRange(width, -width),
+    originY: (intensity, height) => generateRandomNumberInRange(height, -height),
     xStartPositionFunction: (viewerWidth, viewerXOffset) => generateRandomNumberInRange(viewerXOffset, viewerWidth + viewerXOffset),
     xEndPositionFunction: (startXPosition, viewerWidth, viewerXOffset) => generateRandomNumberInRange(viewerXOffset, viewerWidth + viewerXOffset),
     yStartPositionFunction: (viewerHeight, viewerYOffset) => viewerYOffset,
@@ -51,7 +64,7 @@ const ParticleTypeSettings = {
     flip: 0
   },
   INSECT: {
-    colorList: ['Black','Grey'],
+    colorList: ['Black', 'Grey'],
     imageList: [Insect1],
     sizeRange: {
       ratio: 1,
@@ -59,12 +72,16 @@ const ParticleTypeSettings = {
       maxHeight: 15,
     },
     rotation: {
-      calculateMin: (intensity)=>intensity * 0,
-      calculateMax: (intensity)=>intensity,
+      calculateMin: (intensity) => intensity * 0,
+      calculateMax: (intensity) => intensity,
     },
     yRotation: {
-      calculateMin: (intensity)=> intensity * 0,
-      calculateMax: (intensity)=> intensity,
+      calculateMin: (intensity) => intensity * 0,
+      calculateMax: (intensity) => intensity,
+    },
+    durationMultiplier: {
+      calculateMin: (intensity) => intensity * 0,
+      calculateMax: (intensity) => intensity,
     },
     xStartPositionFunction: (viewerWidth, viewerXOffset) => viewerXOffset,
     xEndPositionFunction: (xStartPosition, viewerWidth, viewerXOffset) => viewerXOffset + viewerWidth,
