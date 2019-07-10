@@ -1,99 +1,65 @@
-
-import {
-  getParticleFlip,
-  getRandomColor,
-  getRandomDuration,
-  getRandomHeight,
-  getRandomImage,
-  getRandomOriginX,
-  getRandomOriginY,
-  getRandomRotation,
-  getRandomYRotation,
-  getXEndPosition,
-  getXStartPosition,
-  getYEndPosition,
-  getYStartPosition,
-} from '../../utils/particleUtils'
-import { styler, tween } from 'popmotion'
 import Particle from '../Particle/Particle'
+import ParticleFactoryFactory from '../ParticleFactories/ParticleFactoryFactory'
 import PropTypes from 'prop-types'
 import React from 'react'
+import { styler } from 'popmotion'
 
-
+// ParticleEngine is responsible for using Particle Factories to generate
+// particles based on prop types, and controlling the playback of particle
+// animations
 class ParticleEngine extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { particleArray: [], isVisible: true }
+    this.state = { particleArray: [] }
   }
 
   componentDidMount() {
+    const {
+      maxParticles = 1000,
+      width = 400,
+      xOffset = 0,
+      height = 400,
+      yOffset = -100,
+      intensity,
+      volume
+    } = this.props
+    const viewerSettings = {
+      height: height,
+      width: width,
+      xOffset: xOffset,
+      yOffset: yOffset
+    }
+    const particleFactoryFactory = new ParticleFactoryFactory()
     var myFunction = () => {
-      const { volume, width = 400, widthOffset = 0, intensity, particleType, paused = false, height = 400, heightOffset = -100 } = this.props
-
+      console.log(document.hidden)
+      const { volume, intensity, particleType, paused = false } = this.props
+      const particleFactory = particleFactoryFactory.getParticleFactory(particleType, viewerSettings)
       let particleArray = this.state.particleArray || []
-      const startX = getXStartPosition(particleType, width, widthOffset)
-      const endX = getXEndPosition(particleType, startX, width, widthOffset)
-      const startY = getYStartPosition(particleType, height, heightOffset)
-      const endY = getYEndPosition(particleType, startY, height, heightOffset)
-      const xDistance = startX - endX
-      const yDistance = startY - endY
-      const originX = getRandomOriginX(particleType, intensity)
-      const originY = getRandomOriginX(particleType, intensity)
-
-      if (!paused) {
-        const newParticle = {
-          x: startX,
-          y: startY,
-          key: `particle-${Math.random()}-${Math.random()}`,
-          color: getRandomColor(particleType),
-          height: getRandomHeight(particleType),
-          image: getRandomImage(particleType),
-          ref: React.createRef(),
-          tween: null
-        }
+      // only generate new particles when the window is in focus and the animation is not paused
+      if (!paused && particleArray.length < maxParticles && !document.hidden) {
+        const newParticle = particleFactory.generateParticle(intensity)
+        // creating a react reference for the particle so that the animations
+        // have something to manipulate
+        newParticle.ref = React.createRef()
+        newParticle.tweenStarted = false
         particleArray.push(newParticle)
       }
-      particleArray.forEach((particle, index) => {
-        console.log(particle)
-        if (particle.ref.current && !particle.tween) {
-          particleArray[index].tween =
-            tween({
-              from: {
-                x: startX,
-                y: startY,
-                rotate: 0,
-                rotateY: 0,
-                originX: originX,
-                originY: originY,
-                opacity: 1,
-              },
-              to: {
-                x: endX,
-                y: endY,
-                rotate: getRandomRotation(particleType, intensity),
-                rotateY: getRandomYRotation(particleType, intensity),
-                originX: originX,
-                originY: originY,
-                opacity: 1,
-              },
-              duration: getRandomDuration(particleType, intensity, xDistance, yDistance),
-              flip: getParticleFlip(particleType)
-
-            }
-
-            )
-              // .while(v => v.y < height)
-              .start({
-                update: styler(particle.ref.current).set,
-                complete: () => particleArray.splice(particleArray.indexOf(particle), 1),
-              })
+      particleArray.forEach((particle) => {
+        if (particle.ref.current && !particle.tweenStarted) {
+          particle.tweenStarted = true
+          particle.tween = particle.tween.start({
+            update: styler(particle.ref.current).set,
+            complete: () => particleArray.splice(particleArray.indexOf(particle), 1),
+          })
         }
       }, particleArray)
       this.setState({ particleArray: particleArray })
-      const timer = Math.floor(((intensity + 1) / volume) * 200)
+      //in order to dynamically change how quickly particles appear, we need
+      //to have a nested timer in the callback function
+      const timer = Math.floor(((intensity + 1) / volume) * 300)
       this.timer = setTimeout(myFunction, timer)
     }
-    this.timer = setTimeout(myFunction, Math.floor(((this.props.intensity + 1) / this.props.volume) * 200))
+    this.timer = setTimeout(myFunction, Math.floor(((intensity + 1) / volume) * 300))
   }
 
   componentWillUnmount() {
@@ -105,7 +71,7 @@ class ParticleEngine extends React.Component {
     const { particleArray = [] } = this.state
     const { paused } = this.props
     particleArray.forEach((particle) => {
-      if (particle.tween) {
+      if (particle.tweenStarted) {
         if (paused)
           particle.tween.pause()
         else
@@ -144,10 +110,11 @@ ParticleEngine.propTypes = {
   paused: PropTypes.bool,
   volume: PropTypes.number,
   width: PropTypes.number,
-  widthOffset: PropTypes.number,
+  xOffset: PropTypes.number,
   intensity: PropTypes.number,
   height: PropTypes.number,
-  heightOffset: PropTypes.number
+  yOffset: PropTypes.number,
+  maxParticles: PropTypes.number
 }
 
 export default ParticleEngine

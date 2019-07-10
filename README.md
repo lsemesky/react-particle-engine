@@ -66,3 +66,8 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `npm run build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+
+
+Insect Vectors downloaded with attributable license from: <a rel="nofollow" href="https://www.vecteezy.com">www.Vecteezy.com</a>
+
+Leaf Vectors downloaded for free, formerly available at http://www.sherykdesigns-blog.com/

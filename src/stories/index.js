@@ -1,5 +1,6 @@
 
 import { Leaf1, Leaf10, Leaf11, Leaf12, Leaf13, Leaf14, Leaf15, Leaf16, Leaf2, Leaf3, Leaf4, Leaf5, Leaf6, Leaf7, Leaf8, Leaf9 } from '../svg/leaves'
+import { Insect1, Insect2, Insect3 } from '../svg/insects'
 import { boolean, color, number, select, withKnobs } from '@storybook/addon-knobs'
 import { MuiThemeProvider } from '@material-ui/core/styles'
 import Particle from '../components/Particle/Particle'
@@ -43,28 +44,33 @@ storiesOf('SVG/Leaves')
   .add('Leaf15', () => <Leaf15 />)
   .add('Leaf16', () => <Leaf16 />)
 
+storiesOf('SVG/Insects')
+  .add('Insect1', () => <Insect1 style={{ height: '100px' }} />)
+  .add('Insect2', () => <Insect2 style={{ height: '100px' }} />)
+  .add('Insect3', () => <Insect3 style={{ height: '100px' }} />)
+
 storiesOf('Particle')
   .addDecorator(withKnobs)
-  .add('Default Particle', () => <Particle 
-    color={color('Color','#000000')} 
+  .add('Default Particle', () => <Particle
+    color={color('Color', '#000000')}
     height={number('Height', 100)}
   />)
 
 storiesOf('Particle/Leaf')
   .addDecorator(withKnobs)
-  .add('Default Leaf Particle', () => <Particle 
-    color={color('Color','#000000')} 
+  .add('Default Leaf Particle', () => <Particle
+    color={color('Color', '#000000')}
     height={number('Height', 100)}
     image={Leaf1}
   />)
 
 storiesOf('ParticleEngine')
   .addDecorator(withKnobs)
-  .add('Particle Engine', () => <ParticleEngine 
-    particleType={select('Particle Type',{Leaf:'LEAF', Insect: 'INSECT'},'LEAF')}
+  .add('Particle Engine', () => <ParticleEngine
+    particleType={select('Particle Type', { Leaf: 'LEAF', Insect: 'INSECT' }, 'LEAF')}
     volume={number(
-      'Volume', 
-      100, 
+      'Volume',
+      100,
       {
         range: true,
         min: 0,
@@ -109,6 +115,10 @@ storiesOf('ParticleEngine/Leaves')
   .add('ParticleEngine 100 count, mild intensity', () => <ParticleEngine particleType="LEAF" volume={20} width={500} intensity={20} />)
   .add('ParticleEngine 100 count, medium intensity', () => <ParticleEngine particleType="LEAF" volume={100} width={500} intensity={10} />)
   .add('ParticleEngine 100 count, strong intensity', () => <ParticleEngine particleType="LEAF" volume={200} width={500} intensity={5} />)
+storiesOf('ParticleEngine/Insects')
+  .add('ParticleEngine 100 count, mild intensity', () => <ParticleEngine particleType="INSECT" volume={20} width={500} intensity={20} />)
+  .add('ParticleEngine 100 count, medium intensity', () => <ParticleEngine particleType="INSECT" volume={100} width={500} intensity={10} />)
+  .add('ParticleEngine 100 count, strong intensity', () => <ParticleEngine particleType="INSECT" volume={200} width={500} intensity={5} />)
 
 storiesOf('ParticleViewer')
   .addDecorator(muiThemeDecorator)

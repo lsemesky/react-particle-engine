@@ -8,7 +8,7 @@ import Slider from '@material-ui/lab/Slider'
 import Switch from '@material-ui/core/Switch'
 import Typography from '@material-ui/core/Typography'
 import withStyles from '@material-ui/core/styles/withStyles'
-const DEFAULT_INTENSITY = 10
+const DEFAULT_INTENSITY = 15
 const DEFAULT_VOLUME = 50
 const DEFAULT_PARTICLE_TYPE = 'LEAF'
 const DEFAULT_PAUSED_STATUS = false
@@ -37,9 +37,9 @@ const ParticleViewer = ({ classes }) => {
       id={intensityId}
       classes={{ container: classes.slider }}
       value={intensity}
-      min={0}
+      min={10}
       max={20}
-      step={4}
+      step={1}
       aria-labelledby={intensityId}
       onChange={(event, value) => setIntensity(value)}
     />
