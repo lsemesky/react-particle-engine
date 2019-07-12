@@ -16,7 +16,7 @@ import { ReactComponent as Leaf14 } from './Leaf14.svg'
 import { ReactComponent as Leaf15 } from './Leaf15.svg'
 import { ReactComponent as Leaf16 } from './Leaf16.svg'
 
-export { 
+const leafImageArray = [
   Leaf1,
   Leaf2,
   Leaf3,
@@ -33,4 +33,5 @@ export {
   Leaf14,
   Leaf15,
   Leaf16,
-}
+]
+export { leafImageArray }

@@ -15,7 +15,7 @@ class ParticleEngine extends React.Component {
 
   componentDidMount() {
     const {
-      maxParticles = 1000,
+      maxParticles = 500,
       width = 400,
       xOffset = 0,
       height = 400,
@@ -31,23 +31,22 @@ class ParticleEngine extends React.Component {
     }
     const particleFactoryFactory = new ParticleFactoryFactory()
     var myFunction = () => {
-      console.log(document.hidden)
       const { volume, intensity, particleType, paused = false } = this.props
       const particleFactory = particleFactoryFactory.getParticleFactory(particleType, viewerSettings)
       let particleArray = this.state.particleArray || []
       // only generate new particles when the window is in focus and the animation is not paused
       if (!paused && particleArray.length < maxParticles && !document.hidden) {
-        const newParticle = particleFactory.generateParticle(intensity)
+        const newParticle = particleFactory.generateParticle({ intensity })
         // creating a react reference for the particle so that the animations
         // have something to manipulate
         newParticle.ref = React.createRef()
-        newParticle.tweenStarted = false
+        newParticle.animationStarted = false
         particleArray.push(newParticle)
       }
       particleArray.forEach((particle) => {
-        if (particle.ref.current && !particle.tweenStarted) {
-          particle.tweenStarted = true
-          particle.tween = particle.tween.start({
+        if (particle.ref.current && !particle.animationStarted) {
+          particle.animationStarted = true
+          particle.animation = particle.animation.start({
             update: styler(particle.ref.current).set,
             complete: () => particleArray.splice(particleArray.indexOf(particle), 1),
           })
@@ -56,26 +55,31 @@ class ParticleEngine extends React.Component {
       this.setState({ particleArray: particleArray })
       //in order to dynamically change how quickly particles appear, we need
       //to have a nested timer in the callback function
-      const timer = Math.floor(((intensity + 1) / volume) * 300)
-      this.timer = setTimeout(myFunction, timer)
+      const time = Math.floor(((intensity + 1) / volume) * 300)
+      this.timer = setTimeout(myFunction, time)
     }
     this.timer = setTimeout(myFunction, Math.floor(((intensity + 1) / volume) * 300))
   }
 
   componentWillUnmount() {
+    // remove timer when component unmounts!
     if (this.timer)
       clearTimeout(this.timer)
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     const { particleArray = [] } = this.state
-    const { paused } = this.props
+    const { paused, particleType } = this.props
+    //if particle type changes, remove all the previous particles
+    if (particleType !== prevProps.particleType) {
+      this.setState({ particleArray: [] })
+    }
     particleArray.forEach((particle) => {
-      if (particle.tweenStarted) {
+      if (particle.animationStarted) {
         if (paused)
-          particle.tween.pause()
-        else
-          particle.tween.resume()
+          particle.animation.pause()
+        else if (paused !== prevProps.paused)
+          particle.animation.resume()
       }
     })
   }
@@ -92,7 +96,6 @@ class ParticleEngine extends React.Component {
             ref={v.ref}>
 
             <Particle
-
               particleType={particleType}
               color={v.color}
               height={v.height}

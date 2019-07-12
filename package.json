@@ -15,7 +15,8 @@
     "react-pose": "^4.0.7",
     "react-scripts": "2.1.5",
     "react-test-renderer": "^16.8.6",
-    "react-transition-group": "^2.5.3"
+    "react-transition-group": "^2.5.3",
+    "sinon": "^7.3.2"
   },
   "scripts": {
     "start": "react-scripts start",

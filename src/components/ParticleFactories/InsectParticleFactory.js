@@ -1,174 +1,198 @@
-import { Insect1, Insect2, Insect3 } from '../../svg/insects'
-import { calc, keyframes } from 'popmotion'
+import { calc, easing } from 'popmotion'
 import ParticleFactory from './ParticleFactory'
 import { generateRandomNumberInRange } from '../../utils/randomUtils'
+import { insectImageArray } from '../../svg/insects'
 
 const colorList = ['Black', '#261d1d', '#330505', '#302828']
-const imageList = [Insect1, Insect2, Insect3]
-const particleSettings = {
+const imageList = insectImageArray
+const particleRangeSettings = {
   heightRange: { min: 10, max: 50 },
   colorList: colorList,
+  easing: easing.easeIn,
   imageList: imageList,
-  opacityRangeEnd: { min: 1, max: 1 },
-  opacityRangeStart: { min: 1, max: 1 },
+  opacityRange: { min: 1, max: 1 },
+  originRangeX: { min: 0, max: 0 },
+  originRangeY: { min: 0, max: 0 },
   particleType: 'insect',
-  rotationRangeStart: { min: 0, max: 0 },
-  rotationRangeYStart: { min: 0, max: 45 },
+  rotationRange: { min: 0, max: 0 },
+  rotationRangeY: { min: 0, max: 45 },
   flip: 0
 }
+
+/**
+ * A Particle Factory that will generate insect particles
+ * @class InsectParticleFactory
+ * @extends {ParticleFactory}
+ *
+*/
 class InsectParticleFactory extends ParticleFactory {
   constructor(viewerSettings) {
-    super(viewerSettings, particleSettings)
-  }
-  generateParticle(intensity) {
-    // the side the particle enters from
-    // 1= left, 2=top, 3=right, 4=bottom
-    this.enterSide = generateRandomNumberInRange(4, 1)
-    // the side the particle leaves from
-    // 1= left, 2=top, 3=right, 4=bottom
-    this.exitSide = generateRandomNumberInRange(4, 1)
-    return super.generateParticle(intensity)
+    super(viewerSettings, particleRangeSettings)
   }
 
-  generateRotationFrame(frame1, frame2) {
-    const frame = {
-      x: frame1.x,
-      y: frame1.y,
-      rotate: frame2.rotate,
-      opacity: 1
-    }
-    return frame
-  }
-  generateMovementFrame(targetX = this.getXInRange(), targetY = this.getYInRange()) {
-    const frame = {
-      x: targetX,
-      y: targetY,
-      opacity: 1
-    }
-    return frame
-  }
-
-  generateTween() {
-    const keyframeValues = []
-    const firstFrame = this.generateMovementFrame(this.endX, this.endY)
-    firstFrame.rotate = 0
-    let currentMovementFrame = firstFrame
-    const maxI = generateRandomNumberInRange(1, 4)
-    for (let i = 0; i <= maxI; i++) {
-      //if last frame
-      const nextMovementFrame = i === maxI ?
-        this.generateMovementFrame(this.endX, this.endY) : this.generateMovementFrame()
-      nextMovementFrame.rotate = 90 + calc.angle(
-        { x: currentMovementFrame.x, y: currentMovementFrame.y },
-        { x: nextMovementFrame.x, y: nextMovementFrame.y }
-      )
-      const rotationFrame = this.generateRotationFrame(currentMovementFrame, nextMovementFrame)
-      keyframeValues.push(rotationFrame, nextMovementFrame)
-      currentMovementFrame = nextMovementFrame
-    }
-
-    this.setTotalDistance(keyframeValues)
-    console.log(this.totalDistance)
-
-    return keyframes({
-      values: keyframeValues,
-      duration: this.getDuration(),
-      easings: (p) => .5 * (Math.pow(2 * p - 1, 3) + 1)
-    }).pipe((props) => {
-      const rotation = props.rotate
-      let newRotation = (rotation - 90) % 360
-      //make sure particle is rotating least possible distance
-      return { rotate: newRotation, ...props }
+  /**
+   * Generates a new insect particle based on the particle range settings and 
+   * overridden animation property setters
+   * @override
+   * @param {object} props any additional properties that affect the animation
+   * @returns a new insect particle including a popmotion animation object with playback functions
+   * @memberof InsectParticleFactory
+   */
+  generateParticle(props) {
+    // set the image in the props for use in animation property getter overrides
+    props.image = super.getImage(props)
+    // set the frames in the props for use in animation property getter overrides
+    props.frames = super.generateAnimationFrames(props)
+    const particle = super.generateParticle(props)
+    // pass animations through a pipe to compensate for the svgs appearing to face the direction of -90 degrees
+    particle.animation = particle.animation.pipe((props) => {
+      props.rotate = props.rotate + 90
+      return props
     })
+    return particle
   }
-  setTotalDistance(frames) {
+
+  /**
+   * Generates default animation frames with frames that are only rotation
+   * to face the next point in the animation
+   * @param {array} { frames }
+   * @returns animation keyframes
+   * @memberof InsectParticleFactory
+   */
+  generateAnimationFrames({ frames }) {
+    return this.insertRotationFrames(frames)
+  }
+
+  /**
+   * Calculates the rotation angle for each particle to appear that it is facing
+   * the direction of movement, and then inserts additional rotation frames to accomplish this effect 
+   *
+   * @param {array} frames
+   * @returns an array of frames with updated rotations and inserted rotation-only frames
+   * @memberof InsectParticleFactory
+   */
+  insertRotationFrames(frames) {
+    // the start frame is always added to the new frame if available
+    const newFrames = frames.length ? [frames[0]] : []
+    // create a rotation frame after each frame (except the last)
+    for (let i = 0; i < frames.length - 1; i++) {
+      const currentFrame = frames[i]
+      const nextFrame = frames[i + 1]
+      // calculate the rotation between the current frame and the next frame
+      nextFrame.rotate = calc.angle(
+        { x: currentFrame.x, y: currentFrame.y },
+        { x: nextFrame.x, y: nextFrame.y }
+      )
+      // use all props from the current frame and the rotate of the next frame
+      const rotationFrame = { ...currentFrame, rotate: nextFrame.rotate }
+      // add the new rotation frame, and the frame with the next movement coordinates
+      newFrames.push(rotationFrame)
+      newFrames.push(nextFrame)
+    }
+    return newFrames
+  }
+
+  /**
+   * Generates a start frame at a position on one of the sides of the viewer
+   * @override
+   * @param {object} props any additional properties that affect the animation
+   * @returns
+   * @memberof InsectParticleFactory
+   */
+  generateStartFrame(props) {
+    return super.generateStartFrame(props, this.getRandomViewerSide())
+  }
+
+  /**
+   * Generates an end frame at a position on one of the sides of the viewer
+   * @override
+   * @param {object} props any additional properties that affect the animation
+   * @returns
+   * @memberof InsectParticleFactory
+   */
+  generateEndFrame(props) {
+    return super.generateEndFrame(props, this.getRandomViewerSide())
+  }
+
+  /**
+   * Calculates the total distance moved by the particle across all animation frames
+   * @param {array} { frames } the frames in the animation
+   * @returns
+   * @memberof InsectParticleFactory
+   */
+  getTotalDistance({ frames }) {
     const accumulatedDistance = frames.reduce(
       (accumulator, frame) => {
         const distance = calc.distance(
           { x: accumulator.previousFrame.x, y: accumulator.previousFrame.y },
           { x: frame.x, y: frame.y }
         )
+        // the accumulator holds the distance, but also the previousFrame which is needed to calculate the next distance
         return { distance: accumulator.distance + distance, previousFrame: frame }
       }
       , { distance: 0, previousFrame: frames[0] })
-    this.totalDistance = accumulatedDistance.distance
-  }
-  getDuration() {
-    return this.totalDistance * this.intensity * this.viewerSettings.height * this.viewerSettings.width /
-      generateRandomNumberInRange(600000, 600000)
+    return accumulatedDistance.distance
   }
 
-  getOriginX() {
-    return this.image.width / 2
+  /**
+   * Calculates the duration of the animation relative to the total distance, intensity, and area of the viewer settings
+   * @override
+   * @param {object} props any additional properties that affect the animation
+   * @returns the total duration of the animation
+   * @memberof InsectParticleFactory
+   */
+  getDuration(props) {
+    return this.getTotalDistance(props) * props.intensity * this.viewerSettings.height * this.viewerSettings.width /
+      generateRandomNumberInRange(910000, 900000)
   }
-  getOriginY() {
-    return this.image.height / 2
+
+  /**
+   * @override
+   * @returns the total number of animation frames
+   * @memberof InsectParticleFactory
+   */
+  getNumberOfAnimationFrames() {
+    return generateRandomNumberInRange(6, 2)
   }
-  // getYRotationEnd() {
-  //  // return generateRandomNumberInRange(180)
-  // }
-  // getYRotationStart() {
-  //  // return generateRandomNumberInRange(180)
-  // }
-  getXStartPosition() {
-    const { xOffset, width } = this.viewerSettings
-    switch (this.enterSide) {
-      // left side
-      case 1: return 0
-      // top side
-      case 2: return generateRandomNumberInRange(width + xOffset)
-      // right side
-      case 3: return (xOffset + width)
-      // bottom side
-      case 4: return generateRandomNumberInRange(width + xOffset)
-    }
+
+  /**
+   * @override
+   * @param {object} {image} the image to use for the particle
+   * @returns the image to use for the particle
+   * @memberof InsectParticleFactory
+   */
+  getImage({ image }) {
+    return { image }
   }
-  getXEndPosition() {
-    const { xOffset, width } = this.viewerSettings
-    switch (this.exitSide) {
-      // left side
-      case 1: return 0
-      // top side
-      case 2: return generateRandomNumberInRange(width + xOffset)
-      // right side
-      case 3: return (xOffset + width)
-      // bottom side
-      case 4: return generateRandomNumberInRange(width + xOffset)
-    }
+
+  /**
+   * @override
+   * @param {object} { image } the image being used for the current particle
+   * @returns an origin point in the horizontal center of the image
+   * @memberof InsectParticleFactory
+   */
+  getOriginX({ image }) {
+    return image.width / 2
   }
-  getXInRange() {
-    const { xOffset, width } = this.viewerSettings
-    return generateRandomNumberInRange(xOffset + width, xOffset)
+
+  /**
+   * @override
+   * @param {object} { image } the image being used for the current particle
+   * @returns an origin point in the vertical center of the image
+   * @memberof InsectParticleFactory
+   */
+  getOriginY({ image }) {
+    return image.height / 2
   }
-  getYInRange() {
-    const { yOffset, height } = this.viewerSettings
-    return generateRandomNumberInRange(yOffset + height, yOffset)
-  }
-  getYStartPosition() {
-    const { yOffset, height } = this.viewerSettings
-    switch (this.enterSide) {
-      // left side
-      case 1: return generateRandomNumberInRange(height + yOffset)
-      // top side
-      case 2: return 0
-      // right side
-      case 3: return generateRandomNumberInRange(height + yOffset)
-      // bottom side
-      case 4: return height + yOffset
-    }
-  }
-  getYEndPosition() {
-    const { yOffset, height } = this.viewerSettings
-    switch (this.exitSide) {
-      // left side
-      case 1: return generateRandomNumberInRange(height + yOffset)
-      // top side
-      case 2: return 0
-      // right side
-      case 3: return generateRandomNumberInRange(height + yOffset)
-      // bottom side
-      case 4: return height + yOffset
-    }
+
+  /**
+   * Gets a side of the viewer that can be used by super.generateBoundaryLocation
+   * @returns a string representing a random side of the viewer
+   * @memberof InsectParticleFactory
+   */
+  getRandomViewerSide() {
+    const sideArray = ['bottom', 'left', 'right', 'top']
+    return sideArray[generateRandomNumberInRange(3)]
   }
 }
 

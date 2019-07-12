@@ -1,12 +1,11 @@
-
-import { Leaf1, Leaf10, Leaf11, Leaf12, Leaf13, Leaf14, Leaf15, Leaf16, Leaf2, Leaf3, Leaf4, Leaf5, Leaf6, Leaf7, Leaf8, Leaf9 } from '../svg/leaves'
-import { Insect1, Insect2, Insect3 } from '../svg/insects'
 import { boolean, color, number, select, withKnobs } from '@storybook/addon-knobs'
 import { MuiThemeProvider } from '@material-ui/core/styles'
 import Particle from '../components/Particle/Particle'
 import ParticleEngine from '../components/ParticleEngine/ParticleEngine'
 import ParticleViewer from '../components/ParticleViewer/ParticleViewer'
 import React from 'react'
+import { insectImageArray } from '../svg/insects'
+import { leafImageArray } from '../svg/leaves'
 import { storiesOf } from '@storybook/react'
 
 
@@ -20,35 +19,6 @@ const muiThemeDecorator = (story) => (
   </MuiThemeProvider>
 )
 
-const divStyle = {
-  fill: 'red',
-  outline: 'red',
-  height: '50px',
-
-}
-storiesOf('SVG/Leaves')
-  .add('Leaf1', () => <Leaf1 style={divStyle} />)
-  .add('Leaf2', () => <Leaf2 />)
-  .add('Leaf3', () => <Leaf3 />)
-  .add('Leaf4', () => <Leaf4 />)
-  .add('Leaf5', () => <Leaf5 />)
-  .add('Leaf6', () => <Leaf6 />)
-  .add('Leaf7', () => <Leaf7 />)
-  .add('Leaf8', () => <Leaf8 />)
-  .add('Leaf9', () => <Leaf9 />)
-  .add('Leaf10', () => <Leaf10 />)
-  .add('Leaf11', () => <Leaf11 />)
-  .add('Leaf12', () => <Leaf12 />)
-  .add('Leaf13', () => <Leaf13 />)
-  .add('Leaf14', () => <Leaf14 />)
-  .add('Leaf15', () => <Leaf15 />)
-  .add('Leaf16', () => <Leaf16 />)
-
-storiesOf('SVG/Insects')
-  .add('Insect1', () => <Insect1 style={{ height: '100px' }} />)
-  .add('Insect2', () => <Insect2 style={{ height: '100px' }} />)
-  .add('Insect3', () => <Insect3 style={{ height: '100px' }} />)
-
 storiesOf('Particle')
   .addDecorator(withKnobs)
   .add('Default Particle', () => <Particle
@@ -61,7 +31,7 @@ storiesOf('Particle/Leaf')
   .add('Default Leaf Particle', () => <Particle
     color={color('Color', '#000000')}
     height={number('Height', 100)}
-    image={Leaf1}
+    image={leafImageArray[0]}
   />)
 
 storiesOf('ParticleEngine')
