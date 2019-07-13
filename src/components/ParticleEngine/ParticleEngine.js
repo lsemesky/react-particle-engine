@@ -4,9 +4,14 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { styler } from 'popmotion'
 
-// ParticleEngine is responsible for using Particle Factories to generate
-// particles based on prop types, and controlling the playback of particle
-// animations
+/**
+ * ParticleEngine is responsible for using Particle Factories to generate
+ * particles based on react props passed in, and controlling the playback
+ * of particle animations
+ *
+ * @class ParticleEngine
+ * @extends {React.Component}
+ */
 class ParticleEngine extends React.Component {
   constructor(props) {
     super(props)
@@ -19,7 +24,7 @@ class ParticleEngine extends React.Component {
       width = 400,
       xOffset = 0,
       height = 400,
-      yOffset = -100,
+      yOffset = 0,
       intensity,
       volume
     } = this.props
@@ -30,7 +35,8 @@ class ParticleEngine extends React.Component {
       yOffset: yOffset
     }
     const particleFactoryFactory = new ParticleFactoryFactory()
-    var myFunction = () => {
+    // add new particles in proportion to the intensity and volume properties
+    var animationLoopFunction = () => {
       const { volume, intensity, particleType, paused = false } = this.props
       const particleFactory = particleFactoryFactory.getParticleFactory(particleType, viewerSettings)
       let particleArray = this.state.particleArray || []
@@ -44,21 +50,24 @@ class ParticleEngine extends React.Component {
         particleArray.push(newParticle)
       }
       particleArray.forEach((particle) => {
+        // make sure the ref is valid because sometimes a race condition can occur
         if (particle.ref.current && !particle.animationStarted) {
           particle.animationStarted = true
+          // use the popmotion to start the animation 
           particle.animation = particle.animation.start({
             update: styler(particle.ref.current).set,
+            // remove the particle once it's done with its animation
             complete: () => particleArray.splice(particleArray.indexOf(particle), 1),
           })
         }
       }, particleArray)
       this.setState({ particleArray: particleArray })
-      //in order to dynamically change how quickly particles appear, we need
-      //to have a nested timer in the callback function
+      // in order to dynamically change how quickly particles appear, we need
+      // to have a nested timer in the callback function
       const time = Math.floor(((intensity + 1) / volume) * 300)
-      this.timer = setTimeout(myFunction, time)
+      this.timer = setTimeout(animationLoopFunction, time)
     }
-    this.timer = setTimeout(myFunction, Math.floor(((intensity + 1) / volume) * 300))
+    this.timer = setTimeout(animationLoopFunction, Math.floor(((intensity + 1) / volume) * 300))
   }
 
   componentWillUnmount() {
@@ -70,36 +79,37 @@ class ParticleEngine extends React.Component {
   componentDidUpdate(prevProps) {
     const { particleArray = [] } = this.state
     const { paused, particleType } = this.props
-    //if particle type changes, remove all the previous particles
+    // if particle type changes, remove all the previous particles
     if (particleType !== prevProps.particleType) {
       this.setState({ particleArray: [] })
     }
+    // if the paused property changes 
     particleArray.forEach((particle) => {
+      // for particles that have had their animation started, pause or resume as appropriate
       if (particle.animationStarted) {
         if (paused)
           particle.animation.pause()
-        else if (paused !== prevProps.paused)
+        else
           particle.animation.resume()
       }
     })
   }
 
   render() {
-    const { particleType } = this.props
     const { particleArray } = this.state
-    return particleArray.map((v) =>
-      v ?
+    // create elements for each particle in the particle array
+    return particleArray.map((particle) =>
+      particle ?
         (
           <div
-            key={v.key}
-            style={{ position: 'absolute', y: v.y, x: v.x, opacity: 0 }}
-            ref={v.ref}>
+            key={particle.key}
+            style={{ position: 'absolute', opacity: 0 }}
+            ref={particle.ref}>
 
             <Particle
-              particleType={particleType}
-              color={v.color}
-              height={v.height}
-              image={v.image}
+              color={particle.color}
+              height={particle.height}
+              image={particle.image}
             />
           </div>
         )

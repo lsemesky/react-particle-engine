@@ -19,16 +19,17 @@ const muiThemeDecorator = (story) => (
   </MuiThemeProvider>
 )
 
-storiesOf('Particle')
-  .addDecorator(withKnobs)
-  .add('Default Particle', () => <Particle
-    color={color('Color', '#000000')}
-    height={number('Height', 100)}
-  />)
-
 storiesOf('Particle/Leaf')
   .addDecorator(withKnobs)
-  .add('Default Leaf Particle', () => <Particle
+  .add('Leaf Particle', () => <Particle
+    color={color('Color', '#000000')}
+    height={number('Height', 100)}
+    image={leafImageArray[0]}
+  />)
+
+storiesOf('Particle/Insect')
+  .addDecorator(withKnobs)
+  .add('Insect Particle 1', () => <Particle
     color={color('Color', '#000000')}
     height={number('Height', 100)}
     image={leafImageArray[0]}

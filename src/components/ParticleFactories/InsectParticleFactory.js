@@ -8,7 +8,7 @@ const imageList = insectImageArray
 const particleRangeSettings = {
   heightRange: { min: 10, max: 50 },
   colorList: colorList,
-  easing: easing.easeIn,
+  easing: easing.easeOut,
   imageList: imageList,
   opacityRange: { min: 1, max: 1 },
   originRangeX: { min: 0, max: 0 },
@@ -162,7 +162,7 @@ class InsectParticleFactory extends ParticleFactory {
    * @memberof InsectParticleFactory
    */
   getImage({ image }) {
-    return { image }
+    return image
   }
 
   /**
