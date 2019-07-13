@@ -7,10 +7,6 @@ import React from 'react'
 import { insectImageArray } from '../svg/insects'
 import { leafImageArray } from '../svg/leaves'
 import { storiesOf } from '@storybook/react'
-
-
-
-
 import theme from '../theme'
 
 const muiThemeDecorator = (story) => (
@@ -21,10 +17,40 @@ const muiThemeDecorator = (story) => (
 
 storiesOf('Particle/Leaf')
   .addDecorator(withKnobs)
-  .add('Leaf Particle', () => <Particle
+  .add('Leaf Particle 1', () => <Particle
     color={color('Color', '#000000')}
     height={number('Height', 100)}
     image={leafImageArray[0]}
+  />)
+  .add('Leaf Particle 2', () => <Particle
+    color={color('Color', '#000000')}
+    height={number('Height', 100)}
+    image={leafImageArray[1]}
+  />)
+  .add('Leaf Particle 3', () => <Particle
+    color={color('Color', '#000000')}
+    height={number('Height', 100)}
+    image={leafImageArray[2]}
+  />)
+  .add('Leaf Particle 4', () => <Particle
+    color={color('Color', '#000000')}
+    height={number('Height', 100)}
+    image={leafImageArray[3]}
+  />)
+  .add('Leaf Particle 5', () => <Particle
+    color={color('Color', '#000000')}
+    height={number('Height', 100)}
+    image={leafImageArray[4]}
+  />)
+  .add('Leaf Particle 6', () => <Particle
+    color={color('Color', '#000000')}
+    height={number('Height', 100)}
+    image={leafImageArray[5]}
+  />)
+  .add('Leaf Particle 7', () => <Particle
+    color={color('Color', '#000000')}
+    height={number('Height', 100)}
+    image={leafImageArray[6]}
   />)
 
 storiesOf('Particle/Insect')
@@ -32,7 +58,17 @@ storiesOf('Particle/Insect')
   .add('Insect Particle 1', () => <Particle
     color={color('Color', '#000000')}
     height={number('Height', 100)}
-    image={leafImageArray[0]}
+    image={insectImageArray[0]}
+  />)
+  .add('Insect Particle 2', () => <Particle
+    color={color('Color', '#000000')}
+    height={number('Height', 100)}
+    image={insectImageArray[1]}
+  />)
+  .add('Insect Particle 3', () => <Particle
+    color={color('Color', '#000000')}
+    height={number('Height', 100)}
+    image={insectImageArray[2]}
   />)
 
 storiesOf('ParticleEngine')

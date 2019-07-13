@@ -59,6 +59,7 @@ const ParticleViewer = ({ classes }) => {
       </Box>
       <Box margin={5} padding={5} boxShadow={3} bgcolor="background.default">
         <Typography variant={'h1'}>Laura Semesky React Particle Viewer</Typography>
+        <br />
         <FormGroup>
           <FormControl>
             <InputLabel htmlFor="particleType">ParticleType</InputLabel>
@@ -86,7 +87,7 @@ const ParticleViewer = ({ classes }) => {
             onChange={(event, value) => setIntensity(value)}
           />
           <Typography id={volumeId}>
-            Particle Density
+            Particle Volume/Density
           </Typography>
           <Slider
             value={volume}
