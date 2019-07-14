@@ -9,6 +9,9 @@ import { leafImageArray } from '../svg/leaves'
 import { storiesOf } from '@storybook/react'
 import theme from '../theme'
 
+/*
+ * Storybook story file that generates what you see when you run the storybook app
+ */
 const muiThemeDecorator = (story) => (
   <MuiThemeProvider theme={theme}>
     {story()}

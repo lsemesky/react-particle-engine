@@ -20,7 +20,7 @@ const defaultParticleRangeSettings = {
 /**
  * A Particle Factory that will generate particles based on viewer settings and default 
  * particle range settings
- * call @generateParticle(intensity) to create a new particle 
+ * call @generateParticle({intensity}) to create a new particle 
  * @class ParticleFactory
  */
 class ParticleFactory {

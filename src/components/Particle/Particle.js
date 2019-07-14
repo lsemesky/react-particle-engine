@@ -1,11 +1,13 @@
 import React, { memo } from 'react'
 import PropTypes from 'prop-types'
-import { leafImageArray } from '../../svg/leaves'
 
-const Particle = ({ color = 'black', height = '100', image = leafImageArray[0] }) => {
+/*
+ * Particle is the component that contains the svg image and sets the appropriate style on it
+ */
+const Particle = ({ color = 'black', height = '100', image }) => {
   const style = {
     fill: color,
-    height: `${height}px`,
+    height: height,
     index: 1,
   }
   const Image = image
@@ -15,7 +17,7 @@ const Particle = ({ color = 'black', height = '100', image = leafImageArray[0] }
 Particle.propTypes = {
   color: PropTypes.string,
   height: PropTypes.number,
-  image: PropTypes.func
+  image: PropTypes.func.isRequired
 }
 
 export default memo(Particle)

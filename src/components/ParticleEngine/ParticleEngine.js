@@ -83,7 +83,6 @@ class ParticleEngine extends React.Component {
     if (particleType !== prevProps.particleType) {
       this.setState({ particleArray: [] })
     }
-    // if the paused property changes 
     particleArray.forEach((particle) => {
       // for particles that have had their animation started, pause or resume as appropriate
       if (particle.animationStarted) {

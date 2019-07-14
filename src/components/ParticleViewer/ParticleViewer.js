@@ -24,7 +24,9 @@ const styles = {
     width: '100%',
   },
 }
-
+/*
+ * The React Component responsible for rendering the viewer pane and the control pane
+ */
 const ParticleViewer = ({ classes }) => {
   const [intensity, setIntensity] = useState(DEFAULT_INTENSITY)
   const [volume, setVolume] = useState(DEFAULT_VOLUME)
