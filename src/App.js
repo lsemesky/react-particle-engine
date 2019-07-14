@@ -1,28 +1,19 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import './App.css'
+import { MuiThemeProvider } from '@material-ui/core/styles'
+import ParticleViewer from './components/ParticleViewer/ParticleViewer'
+import React from 'react'
+import theme from './theme'
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+
+/**
+ * The main react component that represents the application
+ */
+function App() {
+  return (
+    <MuiThemeProvider theme={theme}>
+      <ParticleViewer />
+    </MuiThemeProvider>
+  )
 }
 
-export default App;
+export default App

@@ -1,8 +1,14 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Running the Application
 
-In the project directory, you can run:
+Once you have installed Node.js (version 10.16.0 recommended), in the project directory, you should run:
+
+### `npm install`
+
+To install the packages that the application relies on.
+
+The following commands can then be run in the project directory:
 
 ### `npm start`
 
@@ -15,7 +21,14 @@ You will also see any lint errors in the console.
 ### `npm test`
 
 Launches the test runner in the interactive watch mode.<br>
+To run all tests, make sure to press `a` when prompted.
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+### `npm run storybook`
+
+Launches storybook which allows you to view the app components in isolation and allows you to manipulate component props. <br>
+Open [http://localhost:9009](http://localhost:9009) to view it in the browser.<br>
+This was used heavily in development to visually test particles and animations.
 
 ### `npm run build`
 
@@ -27,42 +40,29 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Code Splitting
+## Adding a New Particle
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+The steps to add a new particle are pretty straight forward:
+- Add svgs for the particles you wish into a folder in the `src/svg` directory
+- Import them as react elements (see one index.js files in the `src/svg` subfolders for an example)
+- Create a new Particle Factory that extends `ParticleFactory` 
+- Customize the parameters in the `particleRangeSettings` to use your new particle
+- Optionally change the animation by overriding any default parent functions or `particleRangeSettings`
+- Add the new Particle Factory to the `ParticleFactoryFactory`
+- Add the new Particle type to the drop down
 
-### Analyzing the Bundle Size
+## Technologies Used
+- [Create React App ](https://facebook.github.io/create-react-app/docs/getting-started) framework for [React](https://reactjs.org/)
+- [Material-UI](https://material-ui.com/)
+- [Popmotion Pure](https://popmotion.io/pure/)
+- [Storybook](https://storybook.js.org/)
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+## SVG Credits
+Insect Vectors downloaded with attributable license from http://www.Vecteezy.com
 
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+Leaf Vectors downloaded for free, formerly available at http://www.sherykdesigns-blog.com/
